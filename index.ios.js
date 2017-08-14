@@ -1,53 +1,72 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 
-import React, { Component } from 'react';
+import React, {
+    Component
+} from 'react';
+
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
+    AppRegistry,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Slider,
 } from 'react-native';
 
-export default class nas extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    );
-  }
+import Video from 'react-native-video';
+
+class nas extends Component {
+    constructor(props) {
+        super(props);
+    }
+    state = {
+        rate: 1,
+        volume: 1,
+        muted: false,
+        resizeMode: 'contain',
+        time: 0.0,
+        currentTime: 0.0,
+        paused: false,
+    };
+    componentWillMount(){
+        var createClient = require("./webdav");
+        createClient.setFetchMethod(fetch);
+
+        var client = createClient(
+            "http://192.168.1.234:2000"
+        );
+
+        client
+            .getDirectoryContents("/")
+            .then(function(contents) {
+                console.log(JSON.stringify(contents, undefined, 4));
+            });
+    }
+
+    onLoad=(data)=> {
+        this.setState({time: data.duration});
+    }
+
+    onProgress=(data)=> {
+        this.setState({currentTime: data.currentTime});
+    }
+
+    onBuffer=(isLoading)=> {
+        this.setState({ isLoading });
+    }
+    onChange=(seek)=>{
+        this.player.seek(seek)
+    }
+    render(){
+        return <View style={{width:"100%",height:"100%"}}>
+        </View>
+    }
+
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+
 });
+
 
 AppRegistry.registerComponent('nas', () => nas);
